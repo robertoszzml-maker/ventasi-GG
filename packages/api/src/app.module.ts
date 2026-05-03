@@ -65,7 +65,7 @@ import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
       type: 'mysql',
       host: process.env.MYSQL_HOST,
       port: parseInt(process.env.MYSQL_PORT),
-      password: process.env.MYSQL_ROOT_PASSWORD,
+      password: process.env.MYSQL_PASSWORD,
       username: process.env.MYSQL_USER,
       database: process.env.MYSQL_DATABASE,
       entities: [__dirname + '/**/*.entity.{js,ts}'],
