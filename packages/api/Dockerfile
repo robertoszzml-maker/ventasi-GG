@@ -17,9 +17,8 @@ RUN npm install --legacy-peer-deps
 # Copiar el resto de los archivos de la aplicación
 COPY . .
 
-# El archivo .env ya debe estar presente en el contexto (copiado en el paso anterior)
-# Verificar que exista
-RUN if [ ! -f .env ]; then echo "ERROR: .env no encontrado" && exit 1; fi
+# Railway inyecta automáticamente las variables de entorno
+# No se necesita archivo .env físico en Railway
 
 # Build de la aplicación NestJS
 RUN npm run build
