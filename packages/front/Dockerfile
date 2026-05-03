@@ -17,9 +17,8 @@ RUN npm install --legacy-peer-deps
 # Copia el resto del código
 COPY . .
 
-# El archivo .env ya debe estar presente en el contexto
-# Next.js lo leerá automáticamente durante el build
-RUN if [ ! -f .env ]; then echo "ERROR: .env no encontrado" && exit 1; fi
+# Railway inyecta automáticamente las variables de entorno
+# No se necesita archivo .env físico en Railway
 
 # Construye la aplicación
 RUN npm run build
