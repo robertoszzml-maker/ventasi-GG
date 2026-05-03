@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login API</title>
+</head>
+<body>
+    <h1>Test de Login API</h1>
+    <button onclick="testLogin()">Probar Login</button>
+    <pre id="result"></pre>
+    
+    <script>
+        async function testLogin() {
+            const result = document.getElementById('result');
+            result.textContent = 'Probando...';
+            
+            try {
+                // Test 1: Sin /v1/
+                const response1 = await fetch('http://localhost:3001/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'app': 'nombre_app'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@template.local',
+                        password: 'Admin123!'
+                    })
+                });
+                
+                // Test 2: Con /v1/
+                const response2 = await fetch('http://localhost:3001/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'app': 'nombre_app'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@template.local',
+                        password: 'Admin123!'
+                    })
+                });
+                
+                result.textContent = `
+Test 1 (sin /v1/): ${response1.status} ${response1.statusText}
+Test 2 (con /v1/): ${response2.status} ${response2.statusText}
+                `;
+                
+                if (response2.ok) {
+                    const data = await response2.json();
+                    result.textContent += '\n✅ Login exitoso!';
+                }
+            } catch (error) {
+                result.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth/jwt-auth.guard';
+import { ApiKeyGuard } from '@/modules/auth/guards/api-key/api-key.guard';
+import { AuthorizationGuard } from '@/modules/auth/guards/authorization/authorization.guard';
+import { RequirePermissions } from '@/modules/auth/decorators/require-permissions/require-permissions.decorator';
+import { PERMISOS } from '@/constants/permisos';
+import { ColorService } from './color.service';
+import { CreateColorDto } from './dto/create-color.dto';
+import { UpdateColorDto } from './dto/update-color.dto';
+
+@Controller('colores')
+@UseGuards(JwtAuthGuard, ApiKeyGuard, AuthorizationGuard)
+export class ColorController {
+  constructor(private readonly service: ColorService) {}
+
+  @Post()
+  @RequirePermissions(PERMISOS.COLOR_CREAR)
+  create(@Body() dto: CreateColorDto) {
+    return this.service.create(dto);
+  }
+
+  @Get()
+  @RequirePermissions(PERMISOS.COLOR_VER)
+  findAll(
+    @Query('limit') take: number,
+    @Query('skip') skip: number,
+    @Query('filter') filter: string,
+    @Query('order') order: string,
+  ) {
+    const where = filter ? JSON.parse(filter) : [];
+    const orderBy = order ? JSON.parse(order) : {};
+    return this.service.findAll({ where, order: orderBy, take, skip });
+  }
+
+  @Get(':id')
+  @RequirePermissions(PERMISOS.COLOR_VER)
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.service.findOne(id);
+  }
+
+  @Patch(':id')
+  @RequirePermissions(PERMISOS.COLOR_EDITAR)
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateColorDto) {
+    return this.service.update(id, dto);
+  }
+
+  @Delete(':id')
+  @RequirePermissions(PERMISOS.COLOR_ELIMINAR)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.service.remove(id);
+  }
+}

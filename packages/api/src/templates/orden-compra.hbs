@@ -1,0 +1,234 @@
+<html lang="es">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orden de Compra - {{numeroOrden}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Helvetica:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333333;
+      }
+
+      .page-container {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      @media print {
+        body {
+          background-color: white;
+        }
+
+        .page-container {
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-100">
+    <div
+      class="page-container bg-white mx-auto w-full max-w-[210mm] min-h-[297mm] flex flex-col"
+    >
+      <!-- Header -->
+      <header class="px-6 py-4 bg-white border-b border-gray-200">
+        <div class="flex justify-between items-start">
+          <div>
+            <img
+              src="{{publicUrl}}/logo_pdf.png"
+              alt="Logo"
+              class="h-16 mb-2"
+            />
+
+          </div>
+          <div class="text-right">
+            <div class="border-2 border-gray-800 text-center py-2 mb-2">
+              <p class="text-2xl font-bold">O.C.</p>
+            </div>
+            <div class="text-sm text-gray-700">
+              <p><strong>N°:</strong> {{numeroOrden}}</p>
+              <p><strong>Fecha:</strong> {{fechaEmision}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="text-xs text-gray-700">
+          <p class="font-bold">PINTEGRALCO SRL</p>
+          <p>ENRIQUE MOSCONI 2575</p>
+          <p>NEUQUEN</p>
+          <p>CUIT: 33-64824646-9</p>
+        </div>
+      </header>
+
+      <!-- Información del Proveedor -->
+      <div class="px-6 py-4 border-b border-gray-300">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p>
+              <strong>Proveedor:</strong>
+              {{proveedor.razonSocial}}</p>
+            <p><strong>CUIT:</strong> {{proveedor.cuit}}</p>
+            <p><strong>Dirección:</strong> {{proveedor.direccion}}</p>
+            <p><strong>Ciudad:</strong> {{proveedor.ciudad}}</p>
+          </div>
+          <div>
+            <p><strong>Condición frente al IVA:</strong>
+              {{proveedor.condicionIva}}</p>
+            <p><strong>Método de Pago:</strong> {{metodoPago}}</p>
+            <p><strong>Plazo de Pago:</strong> {{plazoPago}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Items -->
+      <main class="flex-grow px-6 py-4">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr class="bg-gray-100">
+              <th
+                class="border border-gray-300 px-3 py-2 text-left w-24"
+              >Código</th>
+              <th
+                class="border border-gray-300 px-3 py-2 text-left"
+              >Descripción</th>
+              <th
+                class="border border-gray-300 px-3 py-2 text-right w-20"
+              >Cant.</th>
+              <th class="border border-gray-300 px-3 py-2 text-right w-20">IVA %</th>
+              <th
+                class="border border-gray-300 px-3 py-2 text-right w-28"
+              >Precio Unit.</th>
+              <th
+                class="border border-gray-300 px-3 py-2 text-right w-28"
+              >Importe</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each items}}
+              <tr>
+                <td class="border border-gray-300 px-3 py-2">{{codigo}}</td>
+                <td
+                  class="border border-gray-300 px-3 py-2"
+                >{{descripcion}}</td>
+                <td
+                  class="border border-gray-300 px-3 py-2 text-right"
+                >{{cantidad}}</td>
+                <td
+                  class="border border-gray-300 px-3 py-2 text-right"
+                >{{iva}}</td>
+                <td class="border border-gray-300 px-3 py-2 text-right">$
+                  {{precioUnitario}}</td>
+                <td class="border border-gray-300 px-3 py-2 text-right">$
+                  {{importe}}</td>
+              </tr>
+              {{#if descripcionAdicional}}
+                <tr>
+                  <td
+                    colspan="6"
+                    class="border border-gray-300 px-3 py-1 text-xs text-gray-600 bg-gray-50"
+                  >
+                    <span class="font-semibold">Descripción adicional:</span>
+                    {{descripcionAdicional}}
+                  </td>
+                </tr>
+              {{/if}}
+            {{/each}}
+          </tbody>
+        </table>
+
+        <!-- Totales -->
+        <div class="flex justify-end mt-4">
+          <div class="w-64 text-sm">
+            <div class="flex justify-between py-1 border-b">
+              <span class="font-semibold">SUBTOTAL:</span>
+              <span>$ {{subtotal}}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b">
+              <span class="font-semibold">BONIFICACION:</span>
+              <span>$ {{bonificacion}}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b">
+              <span class="font-semibold">IVA:</span>
+              <span>$ {{iva}}</span>
+            </div>
+            <div class="flex justify-between py-2 mt-1">
+              <span class="font-bold text-base">TOTAL:</span>
+              <span class="font-bold text-base">$ {{total}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Observaciones -->
+        {{#if observaciones}}
+          <div class="mt-6 pt-4 border-t border-gray-300">
+            <p class="font-semibold text-sm mb-2">Observaciones:</p>
+            <p class="text-sm text-gray-700">{{observaciones}}</p>
+          </div>
+        {{/if}}
+
+        <!-- Referencias -->
+        <div class="mt-6 pt-4 border-t border-gray-300 text-xs text-gray-600">
+          <div class="grid grid-cols-2 gap-4">
+            {{#if solcomId}}
+              <p><strong>SOLCOM:</strong> #{{solcomId}}</p>
+            {{/if}}
+            {{#if presupuestoId}}
+              <p><strong>PRESUPUESTO:</strong> #{{presupuestoId}}</p>
+            {{/if}}
+          </div>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="mt-auto p-4 bg-gray-100 text-xs border-t border-gray-300">
+        <div class="flex justify-between items-center">
+          <div class="space-y-1">
+            <p class="font-bold">Horario de atención:</p>
+            <p>Lunes a Viernes de 8:00 a 13:00 hs y de 14:00 a 17:00 hs</p>
+            <p class="font-bold">Horario de recepción de mercadería:</p>
+            <p>Lunes a Viernes de 6:00 a 15:00 hs</p>
+          </div>
+          <div class="space-y-1 text-right">
+
+            <p>Cel.
+              <span class="font-semibold">299 4164237</span>
+              /
+              <span class="font-semibold">299 4380671</span>
+              /
+              <span class="font-semibold">299 4380673</span></p>
+            <p>Enrique Mosconi 2575 / PIN OESTE - Neuquén Capital</p>
+            <p>E-mail:
+              <a
+                href="mailto:produccion@pintegralco.com.ar"
+                class="text-gray-700"
+              >produccion@pintegralco.com.ar</a>
+              /
+              <a
+                href="mailto:almacen@pintegralco.com.ar"
+                class="text-gray-700"
+              >almacen@pintegralco.com.ar</a>
+            </p>
+            <p class="font-semibold text-base">
+              <a
+                href="http://www.pintegralco.com.ar"
+                class="text-gray-700"
+              >www.pintegralco.com.ar</a>
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+
+</html>

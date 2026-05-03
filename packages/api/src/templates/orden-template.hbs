@@ -1,0 +1,381 @@
+<html lang="es">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orden de Producción - {{appName}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Helvetica:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333333;
+        font-size: 0.85rem;
+      }
+
+      .page-container {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .trabajo-header {
+        font-weight: 600;
+      }
+
+      /* Colores por defecto si no hay colorAttachment */
+      .trabajo-header {
+        background-color: #f0f0f0;
+      }
+
+      .material-row {
+        background-color: #f8f9fa;
+      }
+
+      .suministro-row {
+        background-color: #e9ecef;
+      }
+
+      .mano-obra-row {
+        background-color: #dee2e6;
+      }
+
+      /* Estilos para tablas compactas */
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th,
+      td {
+        padding: 0.25rem 0.5rem;
+        border: 1px solid #e2e8f0;
+        font-size: 0.75rem;
+      }
+
+      /* Estilos para impresión */
+      @media print {
+        body {
+          background-color: white;
+        }
+
+        .page-container {
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="">
+    <div
+      class="page-container bg-white mx-auto w-full max-w-[210mm] min-h-[297mm] flex flex-col"
+    >
+      <!-- Header compacto -->
+      <header
+        class="flex justify-between items-center px-4 py-2 bg-white border-b border-gray-200"
+      >
+        <div class="flex items-center">
+          <img src="{{publicUrl}}/logo_pdf.png" alt="Logo" class="h-12" />
+          <div class="ml-4 text-xs">
+            <p class="font-semibold">Cliente: {{cliente}}</p>
+            <p>Responsable: {{vendedor}}</p>
+            {{#if esMantenimiento}}{{#if recurso}}<p>Recurso: {{recurso.codigo}} — {{recurso.tipo}}</p>{{/if}}{{/if}}
+          </div>
+        </div>
+        <div class="text-xs font-medium text-gray-700 text-right">
+          <p><strong>N° Orden:</strong> #{{id}}</p>
+          <p><strong>Fecha:</strong> <span>{{fecha}}</span></p>
+        </div>
+      </header>
+
+      <!-- Contenido principal con mejor uso del espacio -->
+      <main
+        class="flex-grow px-3 py-2"
+        style="max-height: calc(297mm - 100px); overflow: hidden;"
+      >
+        <!-- Tablas de ítems -->
+        <div class="space-y-3">
+          {{#each items}}
+            <div class="mb-4">
+              <!-- Encabezado del ítem con descripción y cantidad en la misma fila -->
+              <div class="">
+                <!-- Primera fila: Ítem, descripción y cantidad -->
+                <div class="p-1 flex justify-between items-center">
+                  <div class="flex items-center">
+                    <span class="font-semibold text-sm mr-2">Ítem
+                      {{inc @index}}:</span>
+                    <span class="text-sm">{{descripcion}}</span>
+                  </div>
+                  <div class="text-sm">
+                    <span class="font-semibold">Cant:</span>
+                    {{cantidad}}
+                  </div>
+                </div>
+
+                <!-- Fila separada para detalles si existen -->
+                {{#if detalles}}
+                  <div class="p-1">
+                    <span class="font-semibold text-xs">Detalles:</span>
+                    <span class="text-xs">{{detalles}}</span>
+                  </div>
+                {{/if}}
+
+                <!-- Fila separada para observaciones si existen -->
+                {{#if observaciones}}
+                  <div class="p-1">
+                    <span class="font-semibold text-xs">Observaciones:</span>
+                    <span class="text-xs">{{observaciones}}</span>
+                  </div>
+                {{/if}}
+              </div>
+
+              <!-- Trabajos de producción -->
+              <div class="mt-2">
+                {{#each produccionTrabajos.producto}}
+                  <div class="mb-3">
+                    <!-- Usar el colorAttachment para el fondo del encabezado -->
+                    <div
+                      class="trabajo-header p-1 border border-gray-300"
+                      style="background-color: {{color}}"
+                    >
+                      <p class="font-semibold text-sm text-white">{{nombre}}</p>
+                    </div>
+
+                    <!-- Materiales, suministros y mano de obra uno debajo del otro -->
+                    {{#if materiales.length}}
+                      <table class="w-full mt-1 text-xs border border-gray-300">
+                        <thead class="material-row font-semibold">
+                          <tr>
+                            <th class="text-left px-2 py-1">Materiales</th>
+                            <th class="text-center px-2 py-1">Cantidad</th>
+                            {{#if @root.puedeVerPrecios}}
+                              <th class="text-right px-2 py-1">Punit</th>
+                              <th class="text-right px-2 py-1">Ptotal</th>
+                            {{/if}}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {{#each materiales}}
+                            <tr>
+                              <td class="px-2 py-1">{{inventario.nombre}}</td>
+                              <td
+                                class="text-center px-2 py-1"
+                              >{{cantidad}}</td>
+                              {{#if @root.puedeVerPrecios}}
+                                <td class="text-right px-2 py-1">{{punit}}</td>
+                                <td
+                                  class="text-right px-2 py-1"
+                                >{{importe}}</td>
+                              {{/if}}
+                            </tr>
+                          {{/each}}
+                        </tbody>
+                      </table>
+                    {{/if}}
+
+                    {{#if suministros.length}}
+                      <table class="w-full mt-1 text-xs border border-gray-300">
+                        <thead class="material-row font-semibold">
+                          <tr>
+                            <th class="text-left px-2 py-1">Suministros</th>
+                            <th class="text-center px-2 py-1">Cantidad</th>
+                            {{#if @root.puedeVerPrecios}}
+                              <th class="text-right px-2 py-1">Punit</th>
+                              <th class="text-right px-2 py-1">Ptotal</th>
+                            {{/if}}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {{#each suministros}}
+                            <tr>
+                              <td class="px-2 py-1">{{inventario.nombre}}</td>
+                              <td
+                                class="text-center px-2 py-1"
+                              >{{cantidad}}</td>
+                              {{#if @root.puedeVerPrecios}}
+                                <td class="text-right px-2 py-1">{{punit}}</td>
+                                <td
+                                  class="text-right px-2 py-1"
+                                >{{importe}}</td>
+                              {{/if}}
+                            </tr>
+                          {{/each}}
+                        </tbody>
+                      </table>
+                    {{/if}}
+
+                    {{#if manoDeObra.length}}
+                      <table class="w-full mt-1 text-xs border border-gray-300">
+                        <thead class="material-row font-semibold">
+                          <tr>
+                            <th class="text-left px-2 py-1">Mano de obra</th>
+                            <th class="text-center px-2 py-1">Cantidad</th>
+                            {{#if @root.puedeVerPrecios}}
+                              <th class="text-right px-2 py-1">Punit</th>
+                              <th class="text-right px-2 py-1">Ptotal</th>
+                            {{/if}}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {{#each manoDeObra}}
+                            <tr>
+                              <td class="px-2 py-1">{{inventario.nombre}}</td>
+                              <td
+                                class="text-center px-2 py-1"
+                              >{{cantidad}}</td>
+                              {{#if @root.puedeVerPrecios}}
+                                <td class="text-right px-2 py-1">{{punit}}</td>
+                                <td
+                                  class="text-right px-2 py-1"
+                                >{{importe}}</td>
+                              {{/if}}
+                            </tr>
+                          {{/each}}
+                        </tbody>
+                      </table>
+                    {{/if}}
+
+                  </div>
+                {{/each}}
+
+                {{#each produccionTrabajos.servicio}}
+                  <div class="mb-3">
+                    <!-- Usar el colorAttachment para el fondo del encabezado -->
+                    <div
+                      class="trabajo-header p-1 border border-gray-300"
+                      style="background-color: {{color}}"
+                    >
+                      <p class="font-semibold text-sm text-white">{{nombre}}</p>
+                    </div>
+
+                    <!-- Materiales, suministros y mano de obra uno debajo del otro -->
+                    {{#if materiales.length}}
+                      <table class="w-full mt-1 text-xs border border-gray-300">
+                        <thead class="material-row font-semibold">
+                          <tr>
+                            <th class="text-left px-2 py-1">Materiales</th>
+                            <th class="text-center px-2 py-1">Cantidad</th>
+                            {{#if @root.puedeVerPrecios}}
+                              <th class="text-right px-2 py-1">Punit</th>
+                              <th class="text-right px-2 py-1">Ptotal</th>
+                            {{/if}}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {{#each materiales}}
+                            <tr>
+                              <td class="px-2 py-1">{{inventario.nombre}}</td>
+                              <td
+                                class="text-center px-2 py-1"
+                              >{{cantidad}}</td>
+                              {{#if @root.puedeVerPrecios}}
+                                <td class="text-right px-2 py-1">{{punit}}</td>
+                                <td
+                                  class="text-right px-2 py-1"
+                                >{{importe}}</td>
+                              {{/if}}
+                            </tr>
+                          {{/each}}
+                        </tbody>
+                      </table>
+                    {{/if}}
+
+                    {{#if suministros.length}}
+                      <table class="w-full mt-1 text-xs border border-gray-300">
+                        <thead class="material-row font-semibold">
+                          <tr>
+                            <th class="text-left px-2 py-1">Suministros</th>
+                            <th class="text-center px-2 py-1">Cantidad</th>
+                            {{#if @root.puedeVerPrecios}}
+                              <th class="text-right px-2 py-1">Punit</th>
+                              <th class="text-right px-2 py-1">Ptotal</th>
+                            {{/if}}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {{#each suministros}}
+                            <tr>
+                              <td class="px-2 py-1">{{inventario.nombre}}</td>
+                              <td
+                                class="text-center px-2 py-1"
+                              >{{cantidad}}</td>
+                              {{#if @root.puedeVerPrecios}}
+                                <td class="text-right px-2 py-1">{{punit}}</td>
+                                <td
+                                  class="text-right px-2 py-1"
+                                >{{importe}}</td>
+                              {{/if}}
+                            </tr>
+                          {{/each}}
+                        </tbody>
+                      </table>
+                    {{/if}}
+
+                    {{#if manoDeObra.length}}
+                      <table class="w-full mt-1 text-xs border border-gray-300">
+                        <thead class="material-row font-semibold">
+                          <tr>
+                            <th class="text-left px-2 py-1">Mano de obra</th>
+                            <th class="text-center px-2 py-1">Cantidad</th>
+                            {{#if @root.puedeVerPrecios}}
+                              <th class="text-right px-2 py-1">Punit</th>
+                              <th class="text-right px-2 py-1">Ptotal</th>
+                            {{/if}}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {{#each manoDeObra}}
+                            <tr>
+                              <td class="px-2 py-1">{{inventario.nombre}}</td>
+                              <td
+                                class="text-center px-2 py-1"
+                              >{{cantidad}}</td>
+                              {{#if @root.puedeVerPrecios}}
+                                <td class="text-right px-2 py-1">{{punit}}</td>
+                                <td
+                                  class="text-right px-2 py-1"
+                                >{{importe}}</td>
+                              {{/if}}
+                            </tr>
+                          {{/each}}
+                        </tbody>
+                      </table>
+                    {{/if}}
+                  </div>
+                {{/each}}
+              </div>
+              {{#if archivo.base64}}
+                <div class="file-preview mt-2 p-2">
+                  <!-- Para imágenes -->
+                  <img
+                    src="data:{{archivo.extension}};base64,{{archivo.base64}}"
+                    alt="{{archivo.nombreArchivoOriginal}}"
+                    class="max-w-full h-auto max-h-40 mx-auto border border-gray-200"
+                  />
+                </div>
+              {{/if}}
+              <div class="border-t-4 border-gray-300 my-8"></div>
+            </div>
+          {{/each}}
+        </div>
+      </main>
+
+      <!-- Footer compacto -->
+      <footer
+        class="px-4 py-2 text-xs text-gray-500 border-t border-gray-200 text-center"
+      >
+        <p>{{appName}} - Servicios Integrales</p>
+      </footer>
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,31 @@
+name: Deploy via SSH
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ejecutar despliegue en VPS
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+          SERVER_PASS: ${{ secrets.SERVER_PASS }}
+          SERVER_IP_PROD: ${{ secrets.SERVER_IP_PROD }}
+          SERVER_PORT_PROD: ${{ secrets.SERVER_PORT_PROD }}
+          SERVER_PASS_PROD: ${{ secrets.SERVER_PASS_PROD }}
+        run: |
+          if [ "${{ github.ref_name }}" == "develop" ]; then
+            sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no -p "$SERVER_PORT" root@$SERVER_IP "
+              cd ventasi && git fetch origin develop && git reset --hard origin/develop && ./entrypoint.sh
+            "
+          elif [ "${{ github.ref_name }}" == "master" ]; then
+            sshpass -p "$SERVER_PASS_PROD" ssh -o StrictHostKeyChecking=no -p "$SERVER_PORT_PROD" root@$SERVER_IP_PROD "
+              cd ventasi && git fetch origin master && git reset --hard origin/master && ./entrypoint.sh
+            "
+          fi

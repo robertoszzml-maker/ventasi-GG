@@ -1,0 +1,73 @@
+# ====================================
+# NGINX CONFIGURATION TEMPLATE
+# ====================================
+# Este archivo es un template que se procesa con envsubst
+# Las variables ${SERVER_NAME} se reemplazan automáticamente
+# desde el archivo .env al ejecutar ./entrypoint.sh
+#
+# NO EDITAR nginx.conf directamente - ese archivo se genera automáticamente
+
+events {}
+
+http {
+    # Tamaño máximo del cuerpo de la solicitud
+    client_max_body_size 100M;
+
+    # Definir una zona de limitación de tasa (rate limiting)
+    limit_req_zone $binary_remote_addr zone=one:10m rate=10r/s;
+
+    upstream front {
+        server front:3000;
+    }
+
+    upstream api {
+        server api:3001;
+    }
+
+    server {
+        listen 80;
+        server_name ${SERVER_NAME};
+        
+        
+        location /.well-known/acme-challenge/ {
+            root /var/www/certbot;
+        }
+
+        # Redirección a HTTPS
+        location / {
+            return 301 https://${SERVER_NAME}$request_uri;
+        }
+    }
+    
+    # COMENTAR LA PRIMERA VEZ QUE LEVANTAMOS LA IMAGEN
+    # Descomentar después de generar el certificado SSL
+     server {
+         listen 443 ssl;
+         server_name ${SERVER_NAME};
+        
+         ssl_certificate /etc/nginx/ssl/live/${SERVER_NAME}/fullchain.pem;
+         ssl_certificate_key /etc/nginx/ssl/live/${SERVER_NAME}/privkey.pem;
+     
+     
+         ssl_protocols TLSv1.2 TLSv1.3;
+         ssl_ciphers HIGH:!aNULL:!MD5;
+     
+         location /api/ {
+             proxy_pass http://api/;
+             proxy_set_header Host $host;
+             proxy_set_header X-Real-IP $remote_addr;
+             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header X-Forwarded-Proto $scheme;
+         }
+     
+         location / {
+             proxy_pass http://front/;
+             proxy_set_header Host $host;
+             proxy_set_header X-Real-IP $remote_addr;
+             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header X-Forwarded-Proto $scheme;
+         }
+     
+   
+     }
+}

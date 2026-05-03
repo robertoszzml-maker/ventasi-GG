@@ -1,0 +1,5 @@
+{
+  "include": ["packages/*/src/**/*.ts"],
+  "exclude": ["node_modules", "dist"],
+  "types": ["node", "jest", "@testing-library/jest-dom"]
+}

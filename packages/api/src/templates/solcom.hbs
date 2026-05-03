@@ -1,0 +1,180 @@
+<html lang="es">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solicitud de Compra - {{numeroSolcom}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Helvetica:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333333;
+      }
+
+      .page-container {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      @media print {
+        body {
+          background-color: white;
+        }
+
+        .page-container {
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-100">
+    <div
+      class="page-container bg-white mx-auto w-full max-w-[210mm] min-h-[297mm] flex flex-col"
+    >
+      <!-- Header -->
+      <header class="px-6 py-4 bg-white border-b border-gray-200">
+        <div class="flex justify-between items-start">
+          <div>
+            <img
+              src="{{publicUrl}}/logo_pdf.png"
+              alt="Logo"
+              class="h-16 mb-2"
+            />
+
+          </div>
+          <div class="text-right">
+            <div class="border-2 border-gray-800 text-center py-2 mb-2">
+              <p class="text-2xl font-bold">SOLCOM</p>
+            </div>
+            <div class="text-sm text-gray-700">
+              <p><strong>N°:</strong> {{numeroSolcom}}</p>
+              <p><strong>Fecha:</strong> {{fechaCreacion}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="text-xs text-gray-700">
+          <p class="font-bold">PINTEGRALCO SRL</p>
+          <p>ENRIQUE MOSCONI 2575</p>
+          <p>NEUQUEN</p>
+          <p>CUIT: 33-64824646-9</p>
+        </div>
+      </header>
+
+      <!-- Información General -->
+      <div class="px-6 py-4 border-b border-gray-300">
+        <div class="text-sm space-y-2">
+          {{#if usuarioSolicitante}}
+            <p>
+              <strong>Solicitante:</strong>
+              {{usuarioSolicitante}}</p>
+          {{/if}}
+        </div>
+      </div>
+
+      <!-- Descripción del PDF -->
+      {{#if descripcionPdf}}
+        <div class="px-6 py-4 border-b border-gray-300">
+          <p class="font-semibold text-sm mb-2">Descripción:</p>
+          <p
+            class="text-sm text-gray-700 whitespace-pre-wrap"
+          >{{descripcionPdf}}</p>
+        </div>
+      {{/if}}
+
+      <!-- Tabla de Items -->
+      <main class="flex-grow px-6 py-4">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr class="bg-gray-100">
+              <th
+                class="border border-gray-300 px-3 py-2 text-left"
+              >Descripción</th>
+              <th
+                class="border border-gray-300 px-3 py-2 text-left w-28"
+              >Presentación</th>
+              <th
+                class="border border-gray-300 px-3 py-2 text-right w-20"
+              >Cant.</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each items}}
+              <tr>
+                <td class="border border-gray-300 px-3 py-2">{{nombre}}</td>
+                <td
+                  class="border border-gray-300 px-3 py-2"
+                >{{presentacion}}</td>
+                <td
+                  class="border border-gray-300 px-3 py-2 text-right"
+                >{{cantidad}}</td>
+              </tr>
+              {{#if descripcion}}
+                <tr>
+                  <td
+                    colspan="4"
+                    class="border border-gray-300 px-3 py-1 text-xs text-gray-600 bg-gray-50"
+                  >
+                    <span class="font-semibold">Descripción adicional:</span>
+                    {{descripcion}}
+                  </td>
+                </tr>
+              {{/if}}
+            {{/each}}
+          </tbody>
+        </table>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="mt-auto p-4 bg-gray-100 text-xs border-t border-gray-300">
+        <div class="flex justify-between items-center">
+          <div class="space-y-1">
+            <p class="font-bold">Horario de atención:</p>
+            <p>Lunes a Viernes de 8:00 a 13:00 hs y de 14:00 a 17:00 hs</p>
+            <p class="font-bold">Horario de recepción de mercadería:</p>
+            <p>Lunes a Viernes de 6:00 a 15:00 hs</p>
+          </div>
+          <div class="space-y-1 text-right">
+            <p>Cel.
+              <span class="font-semibold">299 4164237</span>
+              /
+              <span class="font-semibold">299 4380671</span>
+              /
+              <span class="font-semibold">299 4380673</span></p>
+
+            <p>Enrique Mosconi 2575 / PIN OESTE - Neuquén Capital</p>
+            <p>E-mail:
+              <a
+                href="mailto:produccion@pintegralco.com.ar"
+                class="text-gray-700"
+              >produccion@pintegralco.com.ar</a>
+              /
+              <a
+                href="mailto:almacen@pintegralco.com.ar"
+                class="text-gray-700"
+              >almacen@pintegralco.com.ar</a>
+            </p>
+            <p class="font-semibold text-base">
+              <a
+                href="http://www.pintegralco.com.ar"
+                class="text-gray-700"
+              >www.pintegralco.com.ar</a>
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+
+</html>

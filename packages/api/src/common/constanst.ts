@@ -1,0 +1,10 @@
+// export const ROLE_SUPERADMIN = 1
+// export const ROLE_ADMIN = 2
+// export const ROLE_COSTEO = 3
+// export const ROLE_PRODUCCION = 4
+// export const ROLE_FACTURACION = 5
+// export const ROLE_VENDEDOR = 6
+// export const ROLE_DISENADOR = 7
+// export const ROLE_ALMACEN = 8
+// export const ROLE_SERVICIO = 9
+// export const ROLE_COSTEO_COMERCIAL = 10

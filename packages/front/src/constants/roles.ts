@@ -1,0 +1,26 @@
+const SUPERADMIN = 1
+const ADMIN = 2
+const COSTEO = 3
+const PRODUCCION = 4
+const FACTURACION = 5
+const VENDEDOR = 6
+const DISENADOR = 7
+const ALMACEN = 8
+const SERVICIO = 9
+const COSTEO_COMERCIAL = 10
+const ADMIN_VENTAS = 11
+const FINANZAS = 12
+export const ROLE = {
+    SUPERADMIN,
+    ADMIN,
+    COSTEO,
+    PRODUCCION,
+    FACTURACION,
+    VENDEDOR,
+    DISENADOR,
+    ALMACEN,
+    SERVICIO,
+    COSTEO_COMERCIAL,
+    ADMIN_VENTAS,
+    FINANZAS
+}

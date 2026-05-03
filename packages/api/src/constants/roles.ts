@@ -1,0 +1,26 @@
+export const ROLE_SUPERADMIN = 1;
+export const ROLE_ADMIN = 2;
+export const ROLE_COSTEO = 3;
+export const ROLE_PRODUCCION = 4;
+export const ROLE_FACTURACION = 5;
+export const ROLE_VENDEDOR = 6;
+export const ROLE_DISENADOR = 7;
+export const ROLE_ALMACEN = 8;
+export const ROLE_SERVICIO = 9;
+export const ROLE_COSTEO_COMERCIAL = 10;
+export const ROLE_ADMIN_VENTAS = 11;
+export const ROLE_FINANZAS = 12;
+export const ROLE_TODOS = [
+    ROLE_SUPERADMIN,
+    ROLE_ADMIN,
+    ROLE_COSTEO,
+    ROLE_PRODUCCION,
+    ROLE_FACTURACION,
+    ROLE_VENDEDOR,
+    ROLE_DISENADOR,
+    ROLE_ALMACEN,
+    ROLE_SERVICIO,
+    ROLE_COSTEO_COMERCIAL,
+    ROLE_ADMIN_VENTAS,
+    ROLE_FINANZAS
+]
