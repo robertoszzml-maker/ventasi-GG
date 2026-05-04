@@ -34,20 +34,11 @@ async function bootstrap() {
 
   const port = parseInt(process.env.PORT || '4001', 10);
 
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.TCP,
-      options: {
-        port: port,
-        host: "0.0.0.0"
-      },
-    },
-  );
+  const app = await NestFactory.create(AppModule);
 
-  console.log(`📡 AFIP Microservice configurado en puerto ${port}`);
-  await app.listen();
-  console.log('✅ AFIP Microservice iniciado correctamente');
+  await app.listen(port, '0.0.0.0');
+  console.log(`🌐 AFIP API HTTP configurada en puerto ${port}`);
+  console.log('✅ AFIP API HTTP iniciada correctamente');
 }
 
 bootstrap().catch(error => {
