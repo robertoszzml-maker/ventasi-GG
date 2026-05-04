@@ -58,10 +58,8 @@ export class LoginService {
         const OutError = path.join(tempDir, `${seqNr}-loginTicketResponse-ERROR.xml`);
 
         try {
-            console.log('🔧 Iniciando creación de archivos temporales...');
             // Crear archivos temporales desde variables de entorno o archivos
             const { certPath: certificado, keyPath: clave } = await this.certificateService.createTempFiles();
-            console.log(`✅ Archivos temporales recibidos: certificado=${certificado}, clave=${clave}`);
 
             // PASO 1: Crear el XML del LoginTicketRequest
             const genTime = new Date(now.getTime() - 10 * 60000).toISOString();

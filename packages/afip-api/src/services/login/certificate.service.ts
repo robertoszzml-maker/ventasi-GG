@@ -110,16 +110,12 @@ export class CertificateService {
       const certContent = this.getCertificateContent();
       const keyContent = this.getPrivateKeyContent();
 
-      console.log('📄 Certificado y clave obtenidos correctamente');
-
       // Escribir contenido decodificado a archivos temporales
       fs.writeFileSync(certPath, certContent);
       fs.writeFileSync(keyPath, keyContent);
 
-      console.log(`✅ Archivos temporales creados: ${certPath}, ${keyPath}`);
       return { certPath, keyPath };
     } catch (error) {
-      console.error('❌ Error al crear archivos temporales:', error.message);
       // Limpiar archivos si hubo error
       [certPath, keyPath].forEach(file => {
         if (fs.existsSync(file)) fs.unlinkSync(file);
