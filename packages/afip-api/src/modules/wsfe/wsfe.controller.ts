@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { WsfeService } from './wsfe.service';
 import { SolicitarCaeDto } from './dto/solicitar-cae.dto';
 import { UltimoComprobanteDto } from './dto/ultimo-comprobante.dto';
@@ -13,7 +13,7 @@ export class WsfeController {
   }
 
   @Get('ultimo-comprobante')
-  obtenerUltimoComprobante(@Body() dto: UltimoComprobanteDto) {
+  obtenerUltimoComprobante(@Query() dto: UltimoComprobanteDto) {
     return this.wsfeService.obtenerUltimoComprobante(dto);
   }
 }
