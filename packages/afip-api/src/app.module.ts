@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { PadronModule } from './modules/padron/padron.module';
 import { WsfeModule } from './modules/wsfe/wsfe.module';
 import { LoginService } from './services/login/login.service';
+import { CertificateService } from './services/login/certificate.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { LoginService } from './services/login/login.service';
     WsfeModule,
   ],
   controllers: [AppController],
-  providers: [AppService, LoginService],
+  providers: [AppService, CertificateService, LoginService],
   exports: [],
 })
 export class AppModule { }
