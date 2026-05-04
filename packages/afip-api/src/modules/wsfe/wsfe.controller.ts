@@ -1,20 +1,19 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { WsfeService } from './wsfe.service';
 import { SolicitarCaeDto } from './dto/solicitar-cae.dto';
 import { UltimoComprobanteDto } from './dto/ultimo-comprobante.dto';
 
-@Controller()
+@Controller('afip/wsfe')
 export class WsfeController {
-  constructor(private readonly wsfeService: WsfeService) {}
+  constructor(private readonly wsfeService: WsfeService) { }
 
-  @MessagePattern('solicitar-cae')
-  solicitarCae(@Payload() dto: SolicitarCaeDto) {
+  @Post('solicitar-cae')
+  solicitarCae(@Body() dto: SolicitarCaeDto) {
     return this.wsfeService.solicitarCae(dto);
   }
 
-  @MessagePattern('obtener-ultimo-comprobante')
-  obtenerUltimoComprobante(@Payload() dto: UltimoComprobanteDto) {
+  @Get('ultimo-comprobante')
+  obtenerUltimoComprobante(@Body() dto: UltimoComprobanteDto) {
     return this.wsfeService.obtenerUltimoComprobante(dto);
   }
 }
