@@ -4,11 +4,24 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  console.log('🚀 Iniciando AFIP Microservice...');
+  console.log('🚀 Iniciando AFIP Microservice v2.0...');
 
-  // Leer certificados desde variables de entorno (automático)
-  const certBase64 = process.env.AFIP_CERTIFICADO_BASE64;
-  const keyBase64 = process.env.AFIP_CLAVE_PRIVADA_BASE64;
+  // Leer certificados desde variables de entorno (divididas o únicas)
+  const certParts = [
+    process.env.AFIP_CERT_BASE64_1,
+    process.env.AFIP_CERT_BASE64_2,
+    process.env.AFIP_CERT_BASE64_3
+  ].filter(Boolean);
+
+  const keyParts = [
+    process.env.AFIP_KEY_BASE64_1,
+    process.env.AFIP_KEY_BASE64_2,
+    process.env.AFIP_KEY_BASE64_3
+  ].filter(Boolean);
+
+  // Si no hay variables divididas, intentar con variables únicas
+  const certBase64 = certParts.length > 0 ? certParts.join('') : process.env.AFIP_CERT_BASE64;
+  const keyBase64 = keyParts.length > 0 ? keyParts.join('') : process.env.AFIP_KEY_BASE64;
 
   if (certBase64 && keyBase64) {
     console.log('✅ Certificados AFIP encontrados en variables de entorno');
