@@ -5,6 +5,7 @@ import * as path from 'path';
 import { create } from 'xmlbuilder2';
 import * as soap from 'soap';
 import { ConfigService } from '@nestjs/config';
+import { CertificateService } from './certificate.service';
 
 interface AfipLoginResponse {
     token: string;
@@ -16,7 +17,10 @@ interface AfipLoginResponse {
 export class LoginService {
     private credentialsCache: Record<string, AfipLoginResponse> = {};
 
-    constructor(private readonly configService: ConfigService) { }
+    constructor(
+        private readonly configService: ConfigService,
+        private readonly certificateService: CertificateService
+    ) { }
 
     /**
      * Devuelve credenciales para un servicio AFIP.
@@ -54,22 +58,10 @@ export class LoginService {
         const OutError = path.join(tempDir, `${seqNr}-loginTicketResponse-ERROR.xml`);
 
         try {
-            // Asegurar directorio temporal
-            if (!fs.existsSync(tempDir)) {
-                fs.mkdirSync(tempDir, { recursive: true });
-            }
-
-            // Rutas absolutas de certificado y clave
-            const certificado = path.resolve(certificadoPath!);
-            const clave = path.resolve(clavePrivadaPath!);
-
-            // Validar existencia
-            if (!fs.existsSync(certificado)) {
-                throw new Error(`No se encontró el certificado en: ${certificado}`);
-            }
-            if (!fs.existsSync(clave)) {
-                throw new Error(`No se encontró la clave privada en: ${clave}`);
-            }
+            console.log('🔧 Iniciando creación de archivos temporales...');
+            // Crear archivos temporales desde variables de entorno o archivos
+            const { certPath: certificado, keyPath: clave } = await this.certificateService.createTempFiles();
+            console.log(`✅ Archivos temporales recibidos: certificado=${certificado}, clave=${clave}`);
 
             // PASO 1: Crear el XML del LoginTicketRequest
             const genTime = new Date(now.getTime() - 10 * 60000).toISOString();
@@ -118,14 +110,22 @@ export class LoginService {
             const expirationTime = expirationTimeMatch[1];
 
             // Limpiar temporales
-            [OutXml, OutCmsDer, OutCmsB64].forEach((file) => {
-                if (fs.existsSync(file)) fs.unlinkSync(file);
-            });
+            const tempFiles = [OutXml, OutCmsDer, OutCmsB64, certificado, clave];
+            this.certificateService.cleanupTempFiles(tempFiles);
 
             return { token, sign, expirationTime };
         } catch (error: any) {
             console.error('Error al invocar al WSAA:', error.message);
             fs.writeFileSync(OutError, error.message);
+
+            // Limpiar archivos temporales incluso en caso de error
+            try {
+                const { certPath, keyPath } = await this.certificateService.createTempFiles();
+                this.certificateService.cleanupTempFiles([OutXml, OutCmsDer, OutCmsB64, certPath, keyPath]);
+            } catch (cleanupError) {
+                // Ignorar errores de limpieza
+            }
+
             throw error;
         }
     }
