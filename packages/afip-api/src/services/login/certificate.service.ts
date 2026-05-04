@@ -95,7 +95,7 @@ export class CertificateService {
    * Crea archivos temporales del certificado y clave para usar con openssl
    */
   async createTempFiles(): Promise<{ certPath: string; keyPath: string }> {
-    const tempDir = this.configService.get<string>('TEMP_DIR', './temp');
+    const tempDir = this.configService.get<string>('TEMP_DIR', '/tmp');
 
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
